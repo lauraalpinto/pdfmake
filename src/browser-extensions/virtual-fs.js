@@ -1,37 +1,37 @@
-class VirtualFileSystem {
-	constructor() {
-		this.fileSystem = {};
-		this.dataSystem = {};
-	}
+'use strict';
 
-	readFileSync(filename, options = null) {
-		filename = fixFilename(filename);
-
-		let dataContent = this.dataSystem[filename];
-		if (typeof dataContent === 'string' && options === 'utf8') {
-			return dataContent;
-		}
-
-		if (dataContent) {
-			return new Buffer(dataContent, typeof dataContent === 'string' ? 'base64' : undefined);
-		}
-
-		let content = this.fileSystem[filename];
-		if (content) {
-			return content;
-		}
-
-		throw new Error(`File '${filename}' not found in virtual file system`);
-	}
-
-	writeFileSync(filename, content) {
-		this.fileSystem[fixFilename(filename)] = content;
-	}
-
-	bindFS(data) {
-		this.dataSystem = data || {};
-	}
+function VirtualFileSystem() {
+	this.fileSystem = {};
+	this.dataSystem = {};
 }
+
+VirtualFileSystem.prototype.readFileSync = function (filename, options) {
+	filename = fixFilename(filename);
+
+	var dataContent = this.dataSystem[filename];
+	if (typeof dataContent === 'string' && options === 'utf8') {
+		return dataContent;
+	}
+
+	if (dataContent) {
+		return new Buffer(dataContent, typeof dataContent === 'string' ? 'base64' : undefined);
+	}
+
+	var content = this.fileSystem[filename];
+	if (content) {
+		return content;
+	}
+
+	throw 'File \'' + filename + '\' not found in virtual file system';
+};
+
+VirtualFileSystem.prototype.writeFileSync = function (filename, content) {
+	this.fileSystem[fixFilename(filename)] = content;
+};
+
+VirtualFileSystem.prototype.bindFS = function (data) {
+	this.dataSystem = data || {};
+};
 
 
 function fixFilename(filename) {
@@ -46,4 +46,4 @@ function fixFilename(filename) {
 	return filename;
 }
 
-export default new VirtualFileSystem();
+module.exports = new VirtualFileSystem();
